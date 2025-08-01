@@ -10,4 +10,4 @@ docker run --name api-gateway-container --network my-app-network -p 8765:8765 jh
 
 docker run --name reverse-string-container --network my-app-network -p 8080:8080 jherzog89/reverse-string-service:v1
 
-docker run --name angular-app-container --network my-app-network -p 4201:80 jherzog89/angular-app
+docker run --name angular-app-container --network my-app-network -p 4201:80 jherzog89/angular-app:v1
