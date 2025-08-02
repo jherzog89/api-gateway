@@ -18,6 +18,11 @@ public class ApiGatewayConfiguration {
                         .path("/reverseString", "/hello-world-bean/**")
                         .filters(f -> f.stripPrefix(0)) // Keep /reverseString
                         .uri("lb://reverse-string-service"))
+                .route(p -> p
+                        .path("/reverseWords")
+                        .filters(f -> f.stripPrefix(0)) // Keep /reverseString
+                        .uri("lb://reverse-words-service"))
+
 
 
 
