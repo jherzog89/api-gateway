@@ -22,10 +22,6 @@ public class ApiGatewayConfiguration {
                         .path("/reverseWords")
                         .filters(f -> f.stripPrefix(0)) // Keep /reverseString
                         .uri("lb://reverse-words-service"))
-
-
-
-
                         
                 .build();
     }
