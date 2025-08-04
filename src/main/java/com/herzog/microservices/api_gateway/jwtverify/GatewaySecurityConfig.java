@@ -12,11 +12,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+
 import reactor.core.publisher.Mono;
+import reactor.util.retry.RetrySpec;
 
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Duration;
 import java.util.Base64;
 
 @Configuration
@@ -62,32 +66,36 @@ public class GatewaySecurityConfig {
         return source;
     }
 
-    @Bean
-    public ReactiveJwtDecoder jwtDecoder() {
-                System.out.println("in jwtDecoder");
+   @Bean
+public ReactiveJwtDecoder jwtDecoder() {
+    System.out.println("in jwtDecoder");
 
-        return Mono.fromCallable(() -> fetchPublicKey())
-                .flatMap(publicKey -> Mono.just(NimbusReactiveJwtDecoder.withPublicKey(publicKey).build()))
-                .block();
-    }
+    return fetchPublicKey()
+            .flatMap(publicKey -> Mono.just(NimbusReactiveJwtDecoder.withPublicKey(publicKey).build()))
+            .block(); //TOOD Note: Blocking here is generally discouraged, 
+}
 
-    private RSAPublicKey fetchPublicKey() {
-        try {
-                    System.out.println("in fetchPublicKey");
+private Mono<RSAPublicKey> fetchPublicKey() {
+    System.out.println("in fetchPublicKey");
 
-            String base64Key = webClient.get()
-                    .uri(publicKeyUrl)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-
-            System.out.println("base64 key is: " + base64Key);
-            byte[] keyBytes = Base64.getDecoder().decode(base64Key);
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return (RSAPublicKey) keyFactory.generatePublic(keySpec);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to fetch or parse RSA public key", e);
-        }
-    }
+    return webClient.get()
+            .uri(publicKeyUrl)
+            .retrieve()
+            .bodyToMono(String.class)
+            .doOnNext(base64Key -> System.out.println("base64 key is: " + base64Key))
+            .map(base64Key -> {
+                try {
+                    byte[] keyBytes = Base64.getDecoder().decode(base64Key);
+                    X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+                    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                    return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+                } catch (Exception e) {
+                    throw new IllegalStateException("Failed to parse RSA public key", e);
+                }
+            }) 
+            .retryWhen(RetrySpec.backoff(10, Duration.ofSeconds(2)) // Retry 10 times with 2-second backoff
+                    .filter(throwable -> throwable instanceof WebClientRequestException) //Retry if authentication service is down
+                    .onRetryExhaustedThrow((retrySpec, retrySignal) -> 
+                        new IllegalStateException("Failed to fetch or parse RSA public key after retries", retrySignal.failure())));
+}
 }

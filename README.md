@@ -1,4 +1,4 @@
-<img width="823" height="478" alt="image" src="https://github.com/user-attachments/assets/3460e8b8-760b-497e-9a97-95d66e4560a8" />
+<img width="690" height="417" alt="angular_microservices drawio" src="https://github.com/user-attachments/assets/b2a30121-c576-451c-8a1c-d946802babdf" />
 
 docker run --name postgres-container --network my-app-network -e POSTGRES_USER=testuser -e POSTGRES_PASSWORD=password -e POSTGRES_DB=testdb -p 5432:5432 -d postgres:latest
 
@@ -14,3 +14,4 @@ docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name angular-app-container --
 
 docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name reverse-words-container --network my-app-network -p 8090:8090 jherzog89/reverse-words-service:v1
 
+docker run -d --name zipkin --network my-app-network -p 9411:9411 openzipkin/zipkin
