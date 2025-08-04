@@ -1,6 +1,6 @@
-<h1>Angular SpringBoot Sanbox Project:</h1>
+<h1>Angular SpringBoot Sandbox Project:</h1>
 
-This is a sandbox project I'm working on to get more familar with Angular, SpringBoot, Microservices, Docker, API Gateways, JWT, etc
+This is a sandbox project I'm working on to get more familar with Angular, SpringBoot, Microservices, Docker, API Gateways, JWT, etc. Goal is to explore and implement new technologies, not necessarily make a production ready application.
 
 <h2>Architecture:</h2>
 <img width="690" height="417" alt="angular_microservices drawio" src="https://github.com/user-attachments/assets/b2a30121-c576-451c-8a1c-d946802babdf" />
@@ -38,3 +38,4 @@ Password: dummy
 <h2>Eureka Instances:</h2>
 
 <img width="1897" height="843" alt="image" src="https://github.com/user-attachments/assets/dd83cf11-b822-4d57-90b1-2452d5a9505e" />
+
