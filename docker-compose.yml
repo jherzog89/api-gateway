@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    networks:
+      - string-api-network
+
+  naming-registry:
+    image: jherzog89/naming-registry-service:v1
+    container_name: naming-registry-container
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8761:8761"
+    networks:
+      - string-api-network
+
+  authentication:
+    image: jherzog89/authentication-service:v1
+    container_name: authentication-container
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8777:8777"
+    networks:
+      - string-api-network
+
+  api-gateway:
+    image: jherzog89/api-gateway-service:v1
+    container_name: api-gateway-container
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8765:8765"
+    networks:
+      - string-api-network
+
+  reverse-string-1:
+    image: jherzog89/reverse-string-service:v1
+    container_name: reverse-string-container-1
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    networks:
+      - string-api-network
+
+  reverse-string-2:
+    image: jherzog89/reverse-string-service:v1
+    container_name: reverse-string-container-2
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
+    networks:
+      - string-api-network
+
+  angular-app:
+    image: jherzog89/angular-app:v1
+    container_name: angular-app-container
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "4200:80"
+    networks:
+      - string-api-network
+
+  reverse-words-1:
+    image: jherzog89/reverse-words-service:v1
+    container_name: reverse-words-container-1
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8090:8090"
+    networks:
+      - string-api-network
+
+  reverse-words-2:
+    image: jherzog89/reverse-words-service:v1
+    container_name: reverse-words-container-2
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8091:8091"
+    networks:
+      - string-api-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - string-api-network
+
+networks:
+  string-api-network:
+    driver: bridge

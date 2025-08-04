@@ -1,17 +1,40 @@
+<h1>Angular SpringBoot Sanbox Project:</h1>
+
+This is a sandbox project I'm working on to get more familar with Angular, SpringBoot, Microservices, Docker, API Gateways, JWT, etc
+
+<h2>Architecture:</h2>
 <img width="690" height="417" alt="angular_microservices drawio" src="https://github.com/user-attachments/assets/b2a30121-c576-451c-8a1c-d946802babdf" />
 
-docker run --name postgres-container --network my-app-network -e POSTGRES_USER=testuser -e POSTGRES_PASSWORD=password -e POSTGRES_DB=testdb -p 5432:5432 -d postgres:latest
 
-docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name naming-registry-container --network my-app-network -p 8761:8761 jherzog89/naming-registry-service:v1
+<h2>Bring up containers including reverse-string and reverse-word scaled to 2 containers each:</h2>
 
-docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name authentication-container --network my-app-network -p 8777:8777 jherzog89/authentication-service:v1
+`docker-compose up -d`
 
-docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name api-gateway-container --network my-app-network -p 8765:8765 jherzog89/api-gateway-service:v1
+<img width="656" height="443" alt="image" src="https://github.com/user-attachments/assets/b2efdb80-2516-4a7e-8fce-842bb2ee4ee7" />
 
-docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name reverse-string-container --network my-app-network -p 8080:8080 jherzog89/reverse-string-service:v1
 
-docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name angular-app-container --network my-app-network -p 4200:80 jherzog89/angular-app:v1
+<h2>Navigate to http://localhost:4200/</h2>
 
-docker run -d -e "SPRING_PROFILES_ACTIVE=docker" --name reverse-words-container --network my-app-network -p 8090:8090 jherzog89/reverse-words-service:v1
+<img width="1046" height="341" alt="image" src="https://github.com/user-attachments/assets/506ad66e-fb89-4f57-a739-2ed4265043d2" />
 
-docker run -d --name zipkin --network my-app-network -p 9411:9411 openzipkin/zipkin
+
+Username: jason
+
+Password: dummy
+
+<h2>Navigate to API UI and send some reverse strings/reverse word API requests:</h2>
+
+<img width="1919" height="716" alt="image" src="https://github.com/user-attachments/assets/910d6f61-8850-4350-b676-dddc6f78aa98" />
+
+
+<h2>Example Zipkin trace:</h2>
+
+<img width="1917" height="964" alt="image" src="https://github.com/user-attachments/assets/fd840d9c-dde8-4610-9c34-f75cbf247b37" />
+
+<h2>Example Zipkin dependencies:</h2>
+
+<img width="1913" height="804" alt="image" src="https://github.com/user-attachments/assets/4530c062-45a3-4d68-be34-8d0d1dfc94c1" />
+
+<h2>Eureka Instances:</h2>
+
+<img width="1897" height="843" alt="image" src="https://github.com/user-attachments/assets/dd83cf11-b822-4d57-90b1-2452d5a9505e" />
