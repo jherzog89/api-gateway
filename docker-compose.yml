@@ -28,6 +28,9 @@ services:
     container_name: authentication-container
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
     ports:
       - "8777:8777"
     networks:
@@ -38,6 +41,9 @@ services:
     container_name: api-gateway-container
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
     ports:
       - "8765:8765"
     networks:
@@ -48,6 +54,9 @@ services:
     container_name: reverse-string-container-1
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
     ports:
       - "8080:8080"
     networks:
@@ -58,6 +67,9 @@ services:
     container_name: reverse-string-container-2
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
     ports:
       - "8081:8081"
     networks:
@@ -78,6 +90,9 @@ services:
     container_name: reverse-words-container-1
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
     ports:
       - "8090:8090"
     networks:
@@ -88,6 +103,9 @@ services:
     container_name: reverse-words-container-2
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
     ports:
       - "8091:8091"
     networks:
