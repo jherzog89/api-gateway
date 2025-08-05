@@ -3,8 +3,7 @@
 This is a sandbox project I'm working on to get more familar with Angular, SpringBoot, Microservices, Docker, API Gateways, JWT, etc. Goal is to explore and implement new technologies, not necessarily make a production ready application.
 
 <h2>Architecture:</h2>
-<img width="690" height="417" alt="angular_microservices drawio" src="https://github.com/user-attachments/assets/b2a30121-c576-451c-8a1c-d946802babdf" />
-
+<img width="690" height="417" alt="angular_microservices drawio" src="https://github.com/user-attachments/assets/f1bc70eb-8542-4d04-8f69-4a1059f5add9" />
 
 <h2>Bring up containers including reverse-string and reverse-word scaled to 2 containers each:</h2>
 
