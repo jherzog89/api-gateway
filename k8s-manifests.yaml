@@ -1,0 +1,407 @@
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: string-api
+---
+# Postgres Credentials Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-credentials
+  namespace: string-api
+type: Opaque
+data:
+  POSTGRES_USER: dGVzdHVzZXI=  # base64 encoded "testuser"
+  POSTGRES_PASSWORD: cGFzc3dvcmQ=  # base64 encoded "password"
+  POSTGRES_DB: dGVzdGRi  # base64 encoded "testdb"
+---
+# Postgres Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "karpenter.sh/disrupted"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: postgres
+        image: postgres:latest
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_DB
+        ports:
+        - containerPort: 5432
+---
+# Postgres Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: string-api
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP
+---
+# Naming Registry Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: naming-registry
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: naming-registry
+  template:
+    metadata:
+      labels:
+        app: naming-registry
+    spec:
+      containers:
+      - name: naming-registry
+        image: jherzog89/naming-registry-service:v1
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "eks"
+        ports:
+        - containerPort: 8761
+---
+# Naming Registry Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: naming-registry
+  namespace: string-api
+spec:
+  selector:
+    app: naming-registry
+  ports:
+  - port: 8761
+    targetPort: 8761
+  type: ClusterIP
+---
+# Authentication Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication
+  template:
+    metadata:
+      labels:
+        app: authentication
+    spec:
+      containers:
+      - name: authentication
+        image: jherzog89/authentication-service:v1
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "eks"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_DB
+        ports:
+        - containerPort: 8777
+---
+# Authentication Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication
+  namespace: string-api
+spec:
+  selector:
+    app: authentication
+  ports:
+  - port: 8777
+    targetPort: 8777
+  type: ClusterIP
+---
+# API Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: jherzog89/api-gateway-service:v1
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "eks"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_DB
+        ports:
+        - containerPort: 8765
+---
+# API Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: string-api
+spec:
+  selector:
+    app: api-gateway
+  ports:
+  - port: 8765
+    targetPort: 8765
+  type: LoadBalancer
+---
+# Reverse String Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reverse-string
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reverse-string
+  template:
+    metadata:
+      labels:
+        app: reverse-string
+    spec:
+      containers:
+      - name: reverse-string
+        image: jherzog89/reverse-string-service:v1
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "eks"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_DB
+        ports:
+        - containerPort: 8080
+---
+# Reverse String Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: reverse-string
+  namespace: string-api
+spec:
+  selector:
+    app: reverse-string
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+# Angular App Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-app
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: angular-app
+  template:
+    metadata:
+      labels:
+        app: angular-app
+    spec:
+      containers:
+      - name: angular-app
+        image: jherzog89/angular-app:veks
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "eks"
+        ports:
+        - containerPort: 80
+---
+# Angular App Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: angular-app
+  namespace: string-api
+spec:
+  selector:
+    app: angular-app
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+# Reverse Words Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reverse-words
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reverse-words
+  template:
+    metadata:
+      labels:
+        app: reverse-words
+    spec:
+      containers:
+      - name: reverse-words
+        image: jherzog89/reverse-words-service:v1
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "eks"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_DB
+        ports:
+        - containerPort: 8090
+---
+# Reverse Words Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: reverse-words
+  namespace: string-api
+spec:
+  selector:
+    app: reverse-words
+  ports:
+  - port: 8090
+    targetPort: 8090
+  type: ClusterIP
+---
+# Zipkin Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin
+  namespace: string-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: openzipkin/zipkin
+        ports:
+        - containerPort: 9411
+---
+# Zipkin Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  namespace: string-api
+spec:
+  selector:
+    app: zipkin
+  ports:
+  - port: 9411
+    targetPort: 9411
+  type: ClusterIP

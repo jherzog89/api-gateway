@@ -5,11 +5,19 @@ This is a sandbox project I'm working on to get more familar with Angular, Sprin
 <h2>Architecture:</h2>
 <img width="690" height="417" alt="angular_microservices drawio" src="https://github.com/user-attachments/assets/f1bc70eb-8542-4d04-8f69-4a1059f5add9" />
 
-<h2>Bring up containers including reverse-string and reverse-word scaled to 2 containers each:</h2>
+
+
+<h2>Docker deploy:</h2>
 
 `docker-compose up -d`
 
 <img width="656" height="443" alt="image" src="https://github.com/user-attachments/assets/b2efdb80-2516-4a7e-8fce-842bb2ee4ee7" />
+
+<h2>Kubernetes AWS EKS deploy:</h2>
+
+`kubectl apply -f k8s-manifests.yaml`
+
+<img width="936" height="654" alt="image" src="https://github.com/user-attachments/assets/ba4f45ae-b53d-4b61-9f73-635816694c88" />
 
 
 <h2>Navigate to http://localhost:4200/</h2>
