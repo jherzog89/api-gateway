@@ -17,7 +17,7 @@ This is a sandbox project I'm working on to get more familar with Angular, Sprin
 
 `kubectl apply -f k8s-manifests.yaml`
 
-<img width="936" height="654" alt="image" src="https://github.com/user-attachments/assets/ba4f45ae-b53d-4b61-9f73-635816694c88" />
+<img width="929" height="665" alt="image" src="https://github.com/user-attachments/assets/40e3a48a-a7cd-4e38-8849-89b3cb036ec1" />
 
 
 <h2>Navigate to http://localhost:4200/</h2>
